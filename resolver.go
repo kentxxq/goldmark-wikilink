@@ -16,6 +16,7 @@ import "path/filepath"
 //	[[foo.pdf]]  // => "foo.pdf"
 //	[[foo.png]]  // => "foo.png"
 var DefaultResolver Resolver = defaultResolver{}
+var PrettydefaultResolver Resolver = prettydefaultResolver{}
 
 // Resolver resolves pages referenced by wikilinks to their destinations.
 type Resolver interface {
@@ -56,7 +57,7 @@ var pretty_html = []byte("/")
 
 type prettydefaultResolver struct{}
 
-func (defaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
+func (prettydefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	dest := make([]byte, len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
