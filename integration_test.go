@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
+	wikilink "github.com/kentxxq/goldmark-wikilink"
 	"github.com/stretchr/testify/require"
 	"github.com/yuin/goldmark"
-	"go.abhg.dev/goldmark/wikilink"
 	"gopkg.in/yaml.v3"
 )
 

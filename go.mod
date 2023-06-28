@@ -1,4 +1,4 @@
-module go.abhg.dev/goldmark/wikilink
+module github.com/kentxxq/goldmark-wikilink
 
 go 1.19
 
