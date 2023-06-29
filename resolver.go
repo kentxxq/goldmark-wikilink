@@ -16,8 +16,15 @@ import "path/filepath"
 //	[[foo.pdf]]  // => "foo.pdf"
 //	[[foo.png]]  // => "foo.png"
 var DefaultResolver Resolver = defaultResolver{}
+
+//  [[Foo]]      // => "Foo/"
 var PrettydefaultResolver Resolver = prettydefaultResolver{}
-var DoitdefaultResolver Resolver = doitdefaultResolver{}
+
+//  [[Foo]]      // => "../Foo/"
+var RelDoitdefaultResolver Resolver = reldoitdefaultResolver{}
+
+//  [[Foo]]      // => "../../Foo/"
+var RootDoitdefaultResolver Resolver = rootreldoitdefaultResolver{}
 
 // Resolver resolves pages referenced by wikilinks to their destinations.
 type Resolver interface {
@@ -76,13 +83,34 @@ func (prettydefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 
 var doit_head = []byte("../")
 
-type doitdefaultResolver struct{}
+type reldoitdefaultResolver struct{}
 
-func (doitdefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
+func (reldoitdefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	dest := make([]byte, len(doit_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
 		i += copy(dest, doit_head)
+		i += copy(dest[i:], n.Target)
+		if filepath.Ext(string(n.Target)) == "" {
+			i += copy(dest[i:], pretty_html)
+		}
+	}
+	if len(n.Fragment) > 0 {
+		i += copy(dest[i:], _hash)
+		i += copy(dest[i:], n.Fragment)
+	}
+	return dest[:i], nil
+}
+
+var root_doit_head = []byte("../../")
+
+type rootreldoitdefaultResolver struct{}
+
+func (rootreldoitdefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
+	dest := make([]byte, len(root_doit_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
+	var i int
+	if len(n.Target) > 0 {
+		i += copy(dest, root_doit_head)
 		i += copy(dest[i:], n.Target)
 		if filepath.Ext(string(n.Target)) == "" {
 			i += copy(dest[i:], pretty_html)
