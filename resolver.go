@@ -91,15 +91,15 @@ func (prettyResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	return dest[:i], nil
 }
 
-var doit_head = []byte("../")
+var rel_head = []byte("../")
 
 type relResolver struct{}
 
 func (relResolver) ResolveWikilink(n *Node) ([]byte, error) {
-	dest := make([]byte, len(doit_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
+	dest := make([]byte, len(rel_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
-		i += copy(dest, doit_head)
+		i += copy(dest, rel_head)
 		i += copy(dest[i:], n.Target)
 		if filepath.Ext(string(n.Target)) == "" {
 			i += copy(dest[i:], pretty_html)
@@ -112,15 +112,15 @@ func (relResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	return dest[:i], nil
 }
 
-var root_doit_head = []byte("../../")
+var root_head = []byte("../../")
 
 type rootResolver struct{}
 
 func (rootResolver) ResolveWikilink(n *Node) ([]byte, error) {
-	dest := make([]byte, len(root_doit_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
+	dest := make([]byte, len(root_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
-		i += copy(dest, root_doit_head)
+		i += copy(dest, root_head)
 		i += copy(dest[i:], n.Target)
 		if filepath.Ext(string(n.Target)) == "" {
 			i += copy(dest[i:], pretty_html)
