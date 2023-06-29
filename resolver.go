@@ -17,14 +17,24 @@ import "path/filepath"
 //	[[foo.png]]  // => "foo.png"
 var DefaultResolver Resolver = defaultResolver{}
 
+// pretty url
+// https://gohugo.io/content-management/urls/#appearance
 //  [[Foo]]      // => "Foo/"
-var PrettydefaultResolver Resolver = prettydefaultResolver{}
+var PrettyResolver Resolver = prettyResolver{}
 
-//  [[Foo]]      // => "../Foo/"
-var RelDoitdefaultResolver Resolver = reldoitdefaultResolver{}
+// when i use pretty url with [[relative path]]
+//  /root/Foo.md                 url: /root/Foo/
+//  /root/a.md include [[Foo]] . url: /root/a/    wikilink: /root/a/Foo/ not found!
+//  so...
+//  [[Foo]]      // => "../Foo/"    worked!
+var RelResolver Resolver = relResolver{}
 
-//  [[Foo]]      // => "../../Foo/"
-var RootDoitdefaultResolver Resolver = rootreldoitdefaultResolver{}
+// when i use pretty url with [[absolute path]]
+//  /root/Foo.md                      url: /root/Foo/
+//  /root/a.md include [[root/Foo]] . url: /root/a/    wikilink: /root/a/root/Foo/ not found!
+//  so...
+//  [[Foo]]      // => "../../Foo/" worked!
+var RootResolver Resolver = rootResolver{}
 
 // Resolver resolves pages referenced by wikilinks to their destinations.
 type Resolver interface {
@@ -63,9 +73,9 @@ func (defaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 
 var pretty_html = []byte("/")
 
-type prettydefaultResolver struct{}
+type prettyResolver struct{}
 
-func (prettydefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
+func (prettyResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	dest := make([]byte, len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
@@ -83,9 +93,9 @@ func (prettydefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 
 var doit_head = []byte("../")
 
-type reldoitdefaultResolver struct{}
+type relResolver struct{}
 
-func (reldoitdefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
+func (relResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	dest := make([]byte, len(doit_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
@@ -104,9 +114,9 @@ func (reldoitdefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 
 var root_doit_head = []byte("../../")
 
-type rootreldoitdefaultResolver struct{}
+type rootResolver struct{}
 
-func (rootreldoitdefaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
+func (rootResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	dest := make([]byte, len(root_doit_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
