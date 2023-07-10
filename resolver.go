@@ -34,7 +34,13 @@ var RelResolver Resolver = relResolver{}
 //  /root/a.md include [[root/Foo]] . url: /root/a/    wikilink: /root/a/root/Foo/ not found!
 //  so...
 //  [[Foo]]      // => "../../Foo/" worked!
-var RootResolver Resolver = rootResolver{}
+// var RootResolver Resolver = rootResolver{}
+
+var RootResolver = func(b string) Resolver {
+	return &rootResolver{
+		base: b,
+	}
+}
 
 // Resolver resolves pages referenced by wikilinks to their destinations.
 type Resolver interface {
