@@ -112,15 +112,15 @@ func (relResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	return dest[:i], nil
 }
 
-var root_head = []byte("../../")
+type rootResolver struct {
+	base string
+}
 
-type rootResolver struct{}
-
-func (rootResolver) ResolveWikilink(n *Node) ([]byte, error) {
-	dest := make([]byte, len(root_head)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
+func (r rootResolver) ResolveWikilink(n *Node) ([]byte, error) {
+	dest := make([]byte, len(r.base)+len(n.Target)+len(pretty_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
-		i += copy(dest, root_head)
+		i += copy(dest, []byte(r.base))
 		i += copy(dest[i:], n.Target)
 		if filepath.Ext(string(n.Target)) == "" {
 			i += copy(dest[i:], pretty_html)
