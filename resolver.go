@@ -30,12 +30,10 @@ var PrettyResolver Resolver = prettyResolver{}
 var RelResolver Resolver = relResolver{}
 
 // when i use pretty url with [[absolute path]]
-//  /root/Foo.md                      url: /root/Foo/
-//  /root/a.md include [[root/Foo]] . url: /root/a/    wikilink: /root/a/root/Foo/ not found!
+//  /Foo.md                      url: /posts/Foo/
+//  /a.md include [[root/Foo]] . url: /posts/a/    wikilink: /posts/a/posts/Foo/ not found!
 //  so...
-//  [[Foo]]      // => "../../Foo/" worked!
-// var RootResolver Resolver = rootResolver{}
-
+//  [[Foo]]      // => "/root/Foo/" worked!
 var RootResolver = func(b string) Resolver {
 	return &rootResolver{
 		base: b,
